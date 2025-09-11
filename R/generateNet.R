@@ -266,3 +266,4 @@ generateNet=function(decs, rules, type, RulesSetSite, TopNodes,FiltrParam,  Node
   Net = list(nodes = NodeInfoDF, edges = EdgesInfo, RulesSetPerNode = NodeRulesSet)
   return(Net)
 }
+#test
