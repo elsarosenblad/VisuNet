@@ -1,14 +1,11 @@
 generate_object = function(decs, rules, type, TopNodes, FiltrParam,
                            NodeColorType, EdgeColor, EdgeWidth,
                            NewDataNodes, NewDataEdges){
-
   AllNets = NULL
   Net = NULL
-
-  # --- Build per-decision networks ---
   for (i in decs){
     RulesDec = rules[which(rules$decision == i), ]
-    RulesSetSize = nrow(RulesDec)
+    RulesSetSize = dim(RulesDec)[1]
     if (RulesSetSize != 0){
       Net = generateNet(i, RulesDec, type, RulesSetSize, TopNodes, FiltrParam,
                         NodeColorType = NodeColorType, EdgeColor, EdgeWidth,
@@ -19,7 +16,7 @@ generate_object = function(decs, rules, type, TopNodes, FiltrParam,
     AllNets[[i]] = Net
   }
 
-  # --- Build "all" by combining existing networks ---
+  # -- Now instead we build the 'all' network by combining existing networks --
   if (length(decs) > 0) {
     all_nodes <- NULL
     all_edges <- NULL
