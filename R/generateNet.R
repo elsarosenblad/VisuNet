@@ -105,7 +105,7 @@ generateNet=function(decs, rules, type, RulesSetSite, TopNodes,FiltrParam,
   # ---- NodeInfoDF: NOW USE SUMS FOR SIZE ----
   if (is.na(meanDecisionCoverage)[1] == FALSE){
     NodeTitle = paste0('Name: <b>', NodeUniq, '</b><br/>Edges: <b>', NRules,
-                       '</b><br/>Connection: <b>', round(NodeConnection,2),
+                       '</b><br/>Node connection: <b>', round(NodeConnection,2),
                        '</b><br/>Mean accuracy: <b>', round(meanAcc,2),
                        '</b><br/>Mean support: <b>', round(meanSupp,2),
                        '</b><br/>Mean decision coverage: <b>', round(meanDecisionCoverage,2))
@@ -121,7 +121,7 @@ generateNet=function(decs, rules, type, RulesSetSite, TopNodes,FiltrParam,
     )
   } else {
     NodeTitle = paste0('Name: <b>', NodeUniq, '</b><br/>Edges: <b>', NRules,
-                       '</b><br/>Connection: <b>', round(NodeConnection,2),
+                       '</b><br/>Node connection: <b>', round(NodeConnection,2),
                        '</b><br/>Mean accuracy: <b>', round(meanAcc,2),
                        '</b><br/>Mean support: <b>', round(meanSupp,2))
     NodeInfoDF = data.frame(
@@ -205,8 +205,7 @@ generateNet=function(decs, rules, type, RulesSetSite, TopNodes,FiltrParam,
       EdgesInfo$color[which(EdgesInfo$connNorm < 0.7 & EdgesInfo$connNorm >= 0.55)] = '#dbcb33'
       EdgesInfo$width  = (EdgesInfo$connNorm *EdgeWidth)
     }
-    EdgesTile = paste0('From:  <b>', EdgesInfo$from, '</b><br/>To: <b>', EdgesInfo$to,
-                       '</b><br/>Connection: <b>', round(EdgesInfo$conn,2), '</b>')
+    EdgesTile = paste0('Edge: <b>', EdgesInfo$from, ', ', EdgesInfo$to, '</b><br/>Connection: <b>', round(EdgesInfo$conn,2), '</b>')
     EdgesInfo$title = EdgesTile
   }
   
