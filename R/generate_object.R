@@ -15,13 +15,13 @@ generate_object = function(decs, rules, type, TopNodes, FiltrParam,
     }
     AllNets[[i]] = Net
   }
-
+  
   # -- Now instead we build the 'all' network by combining existing networks --
   if (length(decs) > 0) {
     all_nodes <- NULL
     all_edges <- NULL
     all_rulesets <- list()
-
+    
     for (d in decs) {
       if (!is.null(AllNets[[d]]$nodes)) {
         all_nodes <- rbind(all_nodes, AllNets[[d]]$nodes)
@@ -33,14 +33,14 @@ generate_object = function(decs, rules, type, TopNodes, FiltrParam,
         all_rulesets <- c(all_rulesets, AllNets[[d]]$RulesSetPerNode)
       }
     }
-
+    
     AllNets[['all']] <- list(nodes = all_nodes,
                              edges = all_edges,
                              RulesSetPerNode = all_rulesets)
   } else {
     AllNets[['all']] <- list(nodes = NULL, edges = NULL, RulesSetPerNode = NULL)
   }
-
+  
   return(AllNets)
 }
 
