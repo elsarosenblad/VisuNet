@@ -134,11 +134,25 @@ generateNet=function(decs, rules, type, RulesSetSite, TopNodes,FiltrParam,
       NodeConnection = NodeConnection, title = NodeTitle
     )
   }
+  # # Old version
+  # # overwrite if filtering is on support vs coverage
+  # if(FiltrParam != 'Min Decision Coverage'){
+  #   NodeInfoDF$value <- sumSupp   # <-- SUM instead of mean
+  # }
   
-  # overwrite if filtering is on support vs coverage
-  if(FiltrParam != 'Min Decision Coverage'){
-    NodeInfoDF$value <- sumSupp   # <-- SUM instead of mean
+  # --- Node size options ---
+  if (FiltrParam != 'Min Decision Coverage') {
+    # NodeInfoDF$value <- meanSupp           # Option 1: mean support
+    NodeInfoDF$value <- sumSupp             # Option 2: sum support
+    # NodeInfoDF$value <- max(rules$supportRHS)  # Option 3: max support
+  } else {
+    # NodeInfoDF$value <- meanDecisionCoverage   # Option 1: mean decision coverage
+    NodeInfoDF$value <- sumDecisionCoverage     # Option 2: sum decision coverage
+    # NodeInfoDF$value <- max(rules$decisionCoverage) # Option 3: max decision coverage
   }
+  
+  
+  
   
   if(decs == 'all'){
     NodeInfoDF$group = DecisionSet
