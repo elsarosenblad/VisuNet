@@ -30,6 +30,8 @@ generateNet=function(decs, rules, type, RulesSetSite, TopNodes,FiltrParam,
   NodeConnection = NULL
   NodeRulesSet = NULL
   DecisionSet = NULL
+  maxSupp = NULL
+  maxDecisionCoverage  = NULL
   
   for (nod in NodeUniq){
     node_id = (which(lapply(Nodes_vec, function(x) length(which(x == nod))) !=0))
@@ -40,17 +42,20 @@ generateNet=function(decs, rules, type, RulesSetSite, TopNodes,FiltrParam,
     # mean accuracy (hover info)
     meanAcc = c(meanAcc, mean(rules[node_id,"accuracyRHS"]))
     
-    # mean + sum support
+    # mean + sum + max support
     meanSupp = c(meanSupp, mean(rules[node_id,"supportRHS"]))
     sumSupp  = c(sumSupp,  sum(rules[node_id,"supportRHS"]))
+    maxSupp = c(maxSupp, max(rules[node_id,"supportRHS"]))
     
     # mean + sum decision coverage
     if("decisionCoverage" %in% colnames(rules[node_id,])) {
       meanDecisionCoverage = c(meanDecisionCoverage, mean(rules[node_id,"decisionCoverage"]))
       sumDecisionCoverage  = c(sumDecisionCoverage,  sum(rules[node_id,"decisionCoverage"]))
+      maxDecisionCoverage = c(maxDecisionCoverage, max(rules[node_id,"decisionCoverage"]))
     } else {
       meanDecisionCoverage = c(meanDecisionCoverage, NA)
       sumDecisionCoverage  = c(sumDecisionCoverage, NA)
+      maxDecisionCoverage = c(maxDecisionCoverage, NA)
     }
     
     # number of rules
@@ -102,18 +107,17 @@ generateNet=function(decs, rules, type, RulesSetSite, TopNodes,FiltrParam,
     print('The color schema value is wrong!')
   }
   
-  # ---- NodeInfoDF: NOW USE SUMS FOR SIZE ----
   if (is.na(meanDecisionCoverage)[1] == FALSE){
     NodeTitle = paste0('Name: <b>', NodeUniq, '</b><br/>Edges: <b>', NRules,
                        '</b><br/>Node connection: <b>', round(NodeConnection,2),
                        '</b><br/>Mean accuracy: <b>', round(meanAcc,2),
                        '</b><br/>Mean support: <b>', round(meanSupp,2),
-                       '</b><br/>Mean decision coverage: <b>', round(meanDecisionCoverage,2))
+                       '</b><br/>Mean decision coverage: <b>', round(meanDecisionCoverage,2), '</b><br/>Max support: <b>', round(maxSupp,2))
     
     NodeInfoDF = data.frame(
       id = NodeUniq, label = NodeLabel, DiscState = NodeState,
       color.background = NodeColor,
-      value = sumDecisionCoverage,   # <-- use SUM
+      value = NA,
       borderWidth = (PrecRules*20), color.border = c("#0072B2"),
       meanAcc = meanAcc, meanSupp = meanSupp, meanDecisionCoverage = meanDecisionCoverage,
       NRules = NRules, PrecRules = PrecRules,
@@ -134,24 +138,22 @@ generateNet=function(decs, rules, type, RulesSetSite, TopNodes,FiltrParam,
       NodeConnection = NodeConnection, title = NodeTitle
     )
   }
-  # # Old version
+  # OlD version
   # # overwrite if filtering is on support vs coverage
   # if(FiltrParam != 'Min Decision Coverage'){
   #   NodeInfoDF$value <- sumSupp   # <-- SUM instead of mean
   # }
   
-  # --- Node size options ---
+  # --- Node size options (choose one) ---
   if (FiltrParam != 'Min Decision Coverage') {
-    # NodeInfoDF$value <- meanSupp           # Option 1: mean support
-    NodeInfoDF$value <- sumSupp             # Option 2: sum support
-    # NodeInfoDF$value <- max(rules$supportRHS)  # Option 3: max support
+    #NodeInfoDF$value <- meanSupp        # per-node mean
+    #NodeInfoDF$value <- sumSupp          # per-node sum
+    NodeInfoDF$value <- maxSupp         # per-node max
   } else {
-    # NodeInfoDF$value <- meanDecisionCoverage   # Option 1: mean decision coverage
-    NodeInfoDF$value <- sumDecisionCoverage     # Option 2: sum decision coverage
-    # NodeInfoDF$value <- max(rules$decisionCoverage) # Option 3: max decision coverage
+    #NodeInfoDF$value <- meanDecisionCoverage
+    #NodeInfoDF$value <- sumDecisionCoverage
+    NodeInfoDF$value <- maxDecisionCoverage
   }
-  
-  
   
   
   if(decs == 'all'){
@@ -166,7 +168,7 @@ generateNet=function(decs, rules, type, RulesSetSite, TopNodes,FiltrParam,
     NodeInfoDF = NodeInfoDF[1:TopNodes,]
   }
   
-  # ---- EDGES (unchanged from original) ----
+  # ---- EDGES (original) ----
   AllRuleLen = (lapply(Nodes_vec, length))
   EdgesInfo = NULL
   if(length(which(AllRuleLen !=1)) != 0){
@@ -196,6 +198,7 @@ generateNet=function(decs, rules, type, RulesSetSite, TopNodes,FiltrParam,
     EdgesInfo_tmp <- aggregate(EdgesInfoAllSort2,
                                by=list(EdgesInfoAllSort2$from,EdgesInfoAllSort2$to),
                                FUN= function(x) sum(as.numeric(x)))
+    
     EdgesInfo = EdgesInfo_tmp[,-c(3,4)]
     colnames(EdgesInfo) = c('from' , 'to' , 'conn')
     
