@@ -5,6 +5,10 @@
 #' @export
 
 addGOannotations <- function(vis_object, ontology = "MF") {
+    if (!requireNamespace("clusterProfiler", quietly = TRUE))
+        stop("clusterProfiler required")
+    if (!requireNamespace("GO.db", quietly = TRUE))
+        stop("GO.db required")
     # get all genenames from network
     gene_names <- vis_object$all$nodes$label
     # convert gene symbols to entrez ids, "TP53" to "7157"
@@ -13,5 +17,16 @@ addGOannotations <- function(vis_object, ontology = "MF") {
     if (nrow(gene_entrez) == 0) {
         return(vis_object)
     }
-    
+
+    go_list <- list()
+    for (i in 1:nrow(gene_entrez)) {
+        entrez_id <- gene_entrez$ENTREZID[i]
+        symbol <- gene_entrez$SYMBOL[i]
+
+        go_data <- tryCatch(
+            AnnotationDbi::select(org.Hs.eg.db, keys = entrez_id, columns = c("GO", "ONTOLOGY"), keytype = "ENTREZID"),
+            error = function(e) NULL
+        )
+
+    }
 }
