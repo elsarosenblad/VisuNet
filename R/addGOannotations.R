@@ -18,6 +18,7 @@ addGOannotations <- function(vis_object, ontology = "MF") {
         return(vis_object)
     }
 
+    # get GO annotations for each gene
     go_list <- list()
     for (i in 1:nrow(gene_entrez)) {
         entrez_id <- gene_entrez$ENTREZID[i]
@@ -28,5 +29,17 @@ addGOannotations <- function(vis_object, ontology = "MF") {
             error = function(e) NULL
         )
 
+        # if GO annotations could be found, add them to the network
+        if (!is.null(go_data) && nrow(go_data) > 0) {
+            if (ontology != "ALL") go_data <- go_data[go_data$ONTOLOGY == ontology, ]
+            if (nrow(go_data) > 0) {
+                go_ids <- unique(go_data$GO)
+                go_list[[symbol]] <- paste(go_ids, collapse = "; ")
+            }
+        }
+    }
+    if (length(go_list) == 0) {
+        warning("No GO annotations")
+        return(vis_object)
     }
 }
