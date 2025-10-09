@@ -123,6 +123,11 @@ generateNet=function(decs, rules, type, RulesSetSite, TopNodes,FiltrParam,
       NRules = NRules, PrecRules = PrecRules,
       NodeConnection = NodeConnection, title = NodeTitle
     )
+    print(length(NodeUniq))
+    print(length(NodeLabel))
+    print(length(NodeState))
+    print(length(NodeColor))
+    print(length(NodeTitle))
   } else {
     NodeTitle = paste0('Name: <b>', NodeUniq, '</b><br/>Edges: <b>', NRules,
                        '</b><br/>Node connection: <b>', round(NodeConnection,2),
@@ -144,15 +149,15 @@ generateNet=function(decs, rules, type, RulesSetSite, TopNodes,FiltrParam,
   #   NodeInfoDF$value <- sumSupp   # <-- SUM instead of mean
   # }
   
-  # --- Node size options (choose one) ---
+  # --- Node size options ---
   if (FiltrParam != 'Min Decision Coverage') {
     #NodeInfoDF$value <- meanSupp        # per-node mean
-    #NodeInfoDF$value <- sumSupp          # per-node sum
-    NodeInfoDF$value <- maxSupp         # per-node max
+    NodeInfoDF$value <- sumSupp          # per-node sum
+    #NodeInfoDF$value <- maxSupp         # per-node max
   } else {
     #NodeInfoDF$value <- meanDecisionCoverage
-    #NodeInfoDF$value <- sumDecisionCoverage
-    NodeInfoDF$value <- maxDecisionCoverage
+    NodeInfoDF$value <- sumDecisionCoverage
+    #NodeInfoDF$value <- maxDecisionCoverage
   }
   
   
@@ -167,6 +172,7 @@ generateNet=function(decs, rules, type, RulesSetSite, TopNodes,FiltrParam,
   if(TopNodes != 0 & TopNodes <= dim(NodeInfoDF)[1]){
     NodeInfoDF = NodeInfoDF[1:TopNodes,]
   }
+
   
   # ---- EDGES (original) ----
   AllRuleLen = (lapply(Nodes_vec, length))
