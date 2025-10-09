@@ -224,7 +224,7 @@ visunet = function(ruleSet, type ="RDF",  NodeColorType = "DL", NodeSize = "DC",
       # GO annotations to network in run button click
       if(addGO) {
         message("Adding GO annotations")
-        data_input <- addGOannotations(data_input, GO_ontology, GO_level)
+        data_input <- addGOannotations(data_input, GO_ontology)
       }
 
       return(data_input)
