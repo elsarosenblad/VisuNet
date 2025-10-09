@@ -3,6 +3,9 @@
 
 #' VisuNet is an interactive tool for network visualization of complex rule-based classifiers. See the \href{https://komorowskilab.github.io/VisuNet/}{documentation}.
 #' @import visNetwork shiny shinythemes R.ROSETTA
+#' @importFrom clusterProfiler bitr groupGO
+#' @importFrom GO.db Term
+#' @importFrom tidyr separate_rows
 #' @param ruleSet the appropriately formatted set of rules:
 #'\itemize{
 #' \item R.ROSETTA data frame - the rules data frame that is the output of R.ROSETTA can be directly imported in VisuNet.
@@ -52,6 +55,15 @@
 #'   \item CustCol - the names of variables added/changed in the VisuNet output for edges.
 #'   See \code{\link[visNetwork]{visEdges}} for details.
 #' }
+#'
+#' @param addGO a logical value indicating whether to add Gene Ontology (GO) annotations to nodes.
+#' Default is FALSE. Requires clusterProfiler, org.Hs.eg.db, and GO.db packages.
+#'
+#' @param GO_ontology Ontology to use for GO analysis. Options: "MF" (Molecular Function),
+#' "BP" (Biological Process), "CC" (Cellular Component). Default: "MF"
+#'
+#' @param GO_level GO level for analysis (1-10). Default: 5
+#'
 #'
 #'@references
 #' See the \href{https://komorowskilab.github.io/VisuNet/}{documentation} for more details and examples.
@@ -108,10 +120,7 @@
 #' vis_out <- visunet(rules, type = "L")
 #'
 
-
-
-
-visunet = function(ruleSet, type ="RDF",  NodeColorType = "DL", NodeSize = "DC", EdgeColor = 'R', EdgeWidth=10, CustObjectNodes=list(), CustObjectEdges=list()){
+visunet = function(ruleSet, type ="RDF",  NodeColorType = "DL", NodeSize = "DC", EdgeColor = 'R', EdgeWidth=10, CustObjectNodes=list(), CustObjectEdges=list(), addGO = FALSE, GO_ontology = "MF", GO_level = 5){
   rules <- ruleSet
   rules <-  data_input(rules, type)
   rules_10per_param <-  filtration_rules_10per(rules)
@@ -132,7 +141,7 @@ visunet = function(ruleSet, type ="RDF",  NodeColorType = "DL", NodeSize = "DC",
     names(choices_values) <- c('DC', 'S')
   }
   
-  
+  # User interface
   ui <- dashboardPage(
     header <- dashboardHeader(title = "VisuNet", tags$li(class = "dropdown", actionButton("done", "Done"))),
     
@@ -204,12 +213,20 @@ visunet = function(ruleSet, type ="RDF",  NodeColorType = "DL", NodeSize = "DC",
     decs = unique(as.matrix(rules$decision))
     decs_f = c('all', decs )
     
+    #Run button click
     data <- eventReactive( input$run, {
       validate(
         filter_rules(rules, input$accuracy, input$support, input$FiltrParam, input$value_slider)
       )
       RulesFiltr =  filtration_rules(rules, input$accuracy, input$FiltrParam, input$value_slider)
       data_input=generate_object(decs, RulesFiltr,type, input$TopNodes, input$FiltrParam,input$NodeColor, EdgeColor, EdgeWidth, CustObjectNodes, CustObjectEdges)
+
+      # GO annotations to network in run button click
+      if(addGO) {
+        message("Adding GO annotations")
+        data_input <- addGOannotations(data_input, GO_ontology, GO_level)
+      }
+
       return(data_input)
     })
     
@@ -360,7 +377,9 @@ visunet = function(ruleSet, type ="RDF",  NodeColorType = "DL", NodeSize = "DC",
     
     
     observeEvent(input$done, {
-      stopApp(data())
+      result_data <- data()
+      # GO annotations are already added when "Run" was clicked
+      stopApp(result_data)
     })
   }
   
