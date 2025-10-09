@@ -24,6 +24,7 @@ addGOannotations <- function(vis_object, ontology = "MF") {
         entrez_id <- gene_entrez$ENTREZID[i]
         symbol <- gene_entrez$SYMBOL[i]
 
+        # get GO annotations from org.HS database for each gene
         go_data <- tryCatch(
             AnnotationDbi::select(org.Hs.eg.db, keys = entrez_id, columns = c("GO", "ONTOLOGY"), keytype = "ENTREZID"),
             error = function(e) NULL
@@ -38,8 +39,12 @@ addGOannotations <- function(vis_object, ontology = "MF") {
             }
         }
     }
+    #return visunet object 
     if (length(go_list) == 0) {
         warning("No GO annotations")
         return(vis_object)
     }
+
+    # convert go_list to data frame
+    go_df <- data.frame(label = names(go_list), GO_term = unlist(go_list), stringsAsFactors = FALSE)
 }
