@@ -32,9 +32,6 @@ addGOannotations <- function(vis_object, ontology = "MF") {
   go_df <- data.frame(label = names(go_list), GO_term = unlist(go_list), stringsAsFactors = FALSE)
 
   nodes <- merge(vis_object$all$nodes, go_df, by = "label", all.x = TRUE)
-  nodes$label <- ifelse(!is.na(nodes$GO_term),
-                       paste0('GO: ', ifelse(nodes$GO_term == "", "NA", nodes$GO_term), '\n', nodes$label),
-                       nodes$label)
   nodes$title <- ifelse(!is.na(nodes$GO_term),
                        paste0(nodes$title, '<br/>GO: <b>', ifelse(nodes$GO_term == "", "NA", nodes$GO_term), '</b>'),
                        nodes$title)
@@ -43,9 +40,6 @@ addGOannotations <- function(vis_object, ontology = "MF") {
   for (dec in setdiff(names(vis_object), "all")) {
     if (!is.null(vis_object[[dec]]$nodes) && nrow(vis_object[[dec]]$nodes) > 0) {
       dec_nodes <- merge(vis_object[[dec]]$nodes, go_df, by = "label", all.x = TRUE)
-      dec_nodes$label <- ifelse(!is.na(dec_nodes$GO_term),
-                               paste0('GO: ', ifelse(dec_nodes$GO_term == "", "NA", dec_nodes$GO_term), '\n', dec_nodes$label),
-                               dec_nodes$label)
       dec_nodes$title <- ifelse(!is.na(dec_nodes$GO_term),
                                paste0(dec_nodes$title, '<br/>GO: <b>', ifelse(dec_nodes$GO_term == "", "NA", dec_nodes$GO_term), '</b>'),
                                dec_nodes$title)
