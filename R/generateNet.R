@@ -23,15 +23,16 @@ generateNet=function(decs, rules, type, RulesSetSite, TopNodes,FiltrParam,
   meanAcc = NULL
   meanSupp = NULL
   meanDecisionCoverage = NULL
-  sumSupp = NULL
-  sumDecisionCoverage = NULL
   NRules = NULL
   PrecRules = NULL
   NodeConnection = NULL
   NodeRulesSet = NULL
   DecisionSet = NULL
+  # --- Elsa: Added new maxSupp, maxDecisionCoverage, sumSupp and sumDecisionCoverage ---
   maxSupp = NULL
   maxDecisionCoverage  = NULL
+  sumSupp = NULL
+  sumDecisionCoverage = NULL
   
   for (nod in NodeUniq){
     node_id = (which(lapply(Nodes_vec, function(x) length(which(x == nod))) !=0))
@@ -42,6 +43,7 @@ generateNet=function(decs, rules, type, RulesSetSite, TopNodes,FiltrParam,
     # mean accuracy (hover info)
     meanAcc = c(meanAcc, mean(rules[node_id,"accuracyRHS"]))
     
+    # --- Elsa: added max and sum row 48-61, original version used only mean ---
     # mean + sum + max support
     meanSupp = c(meanSupp, mean(rules[node_id,"supportRHS"]))
     sumSupp  = c(sumSupp,  sum(rules[node_id,"supportRHS"]))
@@ -64,6 +66,7 @@ generateNet=function(decs, rules, type, RulesSetSite, TopNodes,FiltrParam,
     # % from rules in decision
     PrecRules = c(PrecRules, dim(rules[node_id,])[1] / dim(rules)[1] )
     
+    # --- Elsa SUGGESTION: Node connectiion should be removed ---
     # Connection value
     NodeConnection = c(NodeConnection, sum(rules[node_id,]$CONNECTION *
                                              (unlist((lapply(Nodes_vec[node_id], length)))-1)))
@@ -84,9 +87,10 @@ generateNet=function(decs, rules, type, RulesSetSite, TopNodes,FiltrParam,
       dec <- paste0(names(Dec_table), collapse=',')
     }
     DecisionSet = c(DecisionSet, dec)
+    # --- Elsa: removed dec <-NULL and the uncommented line #DecisionSet = c(..) since both unused ---
   }
   
-  # ---- Colors same as before ----
+  # --- Elsa: same as before but comments are removed/changed ---
   NodeColor = NULL
   if(NodeColorType == 'DL'){
     NodeColor = rep('#999999', length(NodeUniq))
@@ -107,27 +111,24 @@ generateNet=function(decs, rules, type, RulesSetSite, TopNodes,FiltrParam,
     print('The color schema value is wrong!')
   }
   
+  # --- Elsa: Changed "Connection" to "Node connection" in hover menu, but (see below suggestion)---
+  # --- Elsa: Changed to value=sumDecisionCoverage and value=sumSupp---
+  # --- Elsa suggestion: Node connection should be removed, mean support/decision coverage should be replaced with sum support/decision coverage ---
   if (is.na(meanDecisionCoverage)[1] == FALSE){
     NodeTitle = paste0('Name: <b>', NodeUniq, '</b><br/>Edges: <b>', NRules,
                        '</b><br/>Node connection: <b>', round(NodeConnection,2),
                        '</b><br/>Mean accuracy: <b>', round(meanAcc,2),
                        '</b><br/>Mean support: <b>', round(meanSupp,2),
-                       '</b><br/>Mean decision coverage: <b>', round(meanDecisionCoverage,2), '</b><br/>Max support: <b>', round(maxSupp,2))
+                       '</b><br/>Mean decision coverage: <b>', round(meanDecisionCoverage,2))
     
     NodeInfoDF = data.frame(
       id = NodeUniq, label = NodeLabel, DiscState = NodeState,
       color.background = NodeColor,
-      value = NA,
+      value = sumDecisionCoverage,
       borderWidth = (PrecRules*20), color.border = c("#0072B2"),
       meanAcc = meanAcc, meanSupp = meanSupp, meanDecisionCoverage = meanDecisionCoverage,
       NRules = NRules, PrecRules = PrecRules,
-      NodeConnection = NodeConnection, title = NodeTitle
-    )
-    print(length(NodeUniq))
-    print(length(NodeLabel))
-    print(length(NodeState))
-    print(length(NodeColor))
-    print(length(NodeTitle))
+      NodeConnection = NodeConnection, title = NodeTitle)
   } else {
     NodeTitle = paste0('Name: <b>', NodeUniq, '</b><br/>Edges: <b>', NRules,
                        '</b><br/>Node connection: <b>', round(NodeConnection,2),
@@ -136,7 +137,7 @@ generateNet=function(decs, rules, type, RulesSetSite, TopNodes,FiltrParam,
     NodeInfoDF = data.frame(
       id = NodeUniq, label = NodeLabel, DiscState = NodeState,
       color.background = NodeColor,
-      value = sumSupp,   # <-- use SUM
+      value = sumSupp,
       borderWidth = (PrecRules*20), color.border = c("#0072B2"),
       meanAcc = meanAcc, meanSupp = meanSupp,
       NRules = NRules, PrecRules = PrecRules,
@@ -149,7 +150,7 @@ generateNet=function(decs, rules, type, RulesSetSite, TopNodes,FiltrParam,
   #   NodeInfoDF$value <- sumSupp   # <-- SUM instead of mean
   # }
   
-  # --- Node size options ---
+  # --- Elsa: Node size options ---
   if (FiltrParam != 'Min Decision Coverage') {
     #NodeInfoDF$value <- meanSupp        # per-node mean
     NodeInfoDF$value <- sumSupp          # per-node sum
@@ -166,6 +167,8 @@ generateNet=function(decs, rules, type, RulesSetSite, TopNodes,FiltrParam,
   }
   
   NodeInfoDF$font.size = 20
+
+  # --- Elsa: Removed commented block of code that was here---
   
   NodeInfoDF = NodeInfoDF[order(NodeInfoDF$NodeConnection, decreasing = TRUE),]
   
@@ -174,7 +177,7 @@ generateNet=function(decs, rules, type, RulesSetSite, TopNodes,FiltrParam,
   }
 
   
-  # ---- EDGES (original) ----
+  # ---- EDGES ----
   AllRuleLen = (lapply(Nodes_vec, length))
   EdgesInfo = NULL
   if(length(which(AllRuleLen !=1)) != 0){
@@ -228,11 +231,11 @@ generateNet=function(decs, rules, type, RulesSetSite, TopNodes,FiltrParam,
       EdgesInfo$color[which(EdgesInfo$connNorm < 0.7 & EdgesInfo$connNorm >= 0.55)] = '#dbcb33'
       EdgesInfo$width  = (EdgesInfo$connNorm *EdgeWidth)
     }
+    # --- Elsa: Removed commented block that was here---
     EdgesTile = paste0('Edge: <b>', EdgesInfo$from, ', ', EdgesInfo$to, '</b><br/>Connection: <b>', round(EdgesInfo$conn,2), '</b>')
     EdgesInfo$title = EdgesTile
   }
   
-  # ---- Add custom node/edge info if given ----
   if(length(NewDataNodes)>0){
     NewDataNodesDF = NewDataNodes$nodes
     CustCol = NewDataNodes$CustCol

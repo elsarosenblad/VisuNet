@@ -4,6 +4,7 @@ generate_object = function(decs, rules, type, TopNodes, FiltrParam,
   AllNets = NULL
   Net = NULL
   for (i in decs){
+    # --- Elsa: removed recRulesDecs (unused) ---
     RulesDec = rules[which(rules$decision == i), ]
     RulesSetSize = dim(RulesDec)[1]
     if (RulesSetSize != 0){
@@ -11,12 +12,13 @@ generate_object = function(decs, rules, type, TopNodes, FiltrParam,
                         NodeColorType = NodeColorType, EdgeColor, EdgeWidth,
                         NewDataNodes, NewDataEdges)
     } else {
+      # --- Elsa: changed NodeRulesSetPerNode -> RulesSetPerNode ---
       Net = list(nodes = NULL, edges = NULL, RulesSetPerNode = NULL)
     }
     AllNets[[i]] = Net
   }
   
-  # -- Now instead we build the 'all' network by combining existing networks --
+  # --- Elsa: replaced 'generateNet(all, ...)' call with merged combination of existing networks ---
   if (length(decs) > 0) {
     all_nodes <- NULL
     all_edges <- NULL
@@ -44,6 +46,7 @@ generate_object = function(decs, rules, type, TopNodes, FiltrParam,
   return(AllNets)
 }
 
+# --- OLD VERSION ---
 # generate_object = function(decs, rules,type,  TopNodes, FiltrParam,  NodeColorType,  EdgeColor, EdgeWidth, NewDataNodes, NewDataEdges){
 #   
 #   AllNets = NULL

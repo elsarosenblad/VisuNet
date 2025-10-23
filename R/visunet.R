@@ -3,6 +3,7 @@
 
 #' VisuNet is an interactive tool for network visualization of complex rule-based classifiers. See the \href{https://komorowskilab.github.io/VisuNet/}{documentation}.
 #' @import visNetwork shiny shinythemes R.ROSETTA
+# --- Elsa: Import functions for GO annotations ---
 #' @importFrom clusterProfiler bitr groupGO
 #' @importFrom GO.db Term
 #' @importFrom tidyr separate_rows
@@ -34,6 +35,7 @@
 #' }
 #'The default is "DL".
 #'
+# -- Elsa suggestion: Update this part to sum if that is what we decide to use ---
 #' @param NodeSize a character string specifying the size of nodes:
 #' \itemize{
 #'   \item "DC" - the mean decision coverage for the feature
@@ -56,13 +58,14 @@
 #'   See \code{\link[visNetwork]{visEdges}} for details.
 #' }
 #'
+# -- Elsa: new documentaiton comments  ---
 #' @param addGO a logical value indicating whether to add Gene Ontology (GO) annotations to nodes.
 #' Default is FALSE. Requires clusterProfiler, org.Hs.eg.db, and GO.db packages.
 #'
 #' @param GO_ontology Ontology to use for GO analysis. Options: "MF" (Molecular Function),
 #' "BP" (Biological Process), "CC" (Cellular Component). Default: "MF"
 #'
-#' @param GO_level GO level for analysis (1-10). Default: 5
+#' @param GO_level GO level for analysis (1-10). Default: 5 which is the molecular function
 #'
 #'
 #'@references
@@ -221,9 +224,9 @@ visunet = function(ruleSet, type ="RDF",  NodeColorType = "DL", NodeSize = "DC",
       RulesFiltr =  filtration_rules(rules, input$accuracy, input$FiltrParam, input$value_slider)
       data_input=generate_object(decs, RulesFiltr,type, input$TopNodes, input$FiltrParam,input$NodeColor, EdgeColor, EdgeWidth, CustObjectNodes, CustObjectEdges)
 
-      # GO annotations to network in run button click
+      # -- Elsa: Added GO annotations to network in run button click ---
       if(addGO) {
-        message("Adding GO annotations")
+        message("Adding GO annotations") # can be removed
         data_input <- addGOannotations(data_input, GO_ontology)
       }
 
