@@ -21,27 +21,35 @@ addGOannotations <- function(vis_object, ontology = "MF") {
     if (!is.null(go_data) && nrow(go_data) > 0) {
       if (ontology != "ALL") go_data <- go_data[go_data$ONTOLOGY == ontology, ]
       if (nrow(go_data) > 0) {
-        go_ids <- unique(go_data$GO)
-        go_list[[symbol]] <- paste(go_ids, collapse = "; ")
+        go_ids <- as.character(unique(go_data[, 'GO']))
+        # Get TERM from GO.db using GO IDs
+        go_term_data <- tryCatch(
+          AnnotationDbi::select(GO.db, keys = go_ids, columns = c("TERM"), keytype = "GOID"),
+          error = function(e) NULL
+        )
+        if (!is.null(go_term_data) && nrow(go_term_data) > 0) {
+          go_terms <- as.character(unique(go_term_data$TERM))
+          go_list[[symbol]] <- paste(go_terms, collapse = "; ")
+        }
       }
     }
   }
 
   if (length(go_list) == 0) return(vis_object)
 
-  go_df <- data.frame(label = names(go_list), GO_term = unlist(go_list), stringsAsFactors = FALSE)
+  go_df <- data.frame(label = names(go_list), GO_function = unlist(go_list), stringsAsFactors = FALSE)
 
   nodes <- merge(vis_object$all$nodes, go_df, by = "label", all.x = TRUE)
-  nodes$title <- ifelse(!is.na(nodes$GO_term),
-                       paste0(nodes$title, '<br/>GO: <b>', ifelse(nodes$GO_term == "", "NA", nodes$GO_term), '</b>'),
+  nodes$title <- ifelse(!is.na(nodes$GO_function),
+                       paste0(nodes$title, '<br/>GO: <b>', ifelse(nodes$GO_function == "", "NA", nodes$GO_function), '</b>'),
                        nodes$title)
   vis_object$all$nodes <- nodes
 
   for (dec in setdiff(names(vis_object), "all")) {
     if (!is.null(vis_object[[dec]]$nodes) && nrow(vis_object[[dec]]$nodes) > 0) {
       dec_nodes <- merge(vis_object[[dec]]$nodes, go_df, by = "label", all.x = TRUE)
-      dec_nodes$title <- ifelse(!is.na(dec_nodes$GO_term),
-                               paste0(dec_nodes$title, '<br/>GO: <b>', ifelse(dec_nodes$GO_term == "", "NA", dec_nodes$GO_term), '</b>'),
+      dec_nodes$title <- ifelse(!is.na(dec_nodes$GO_function),
+                               paste0(dec_nodes$title, '<br/>GO: <b>', ifelse(dec_nodes$GO_function == "", "NA", dec_nodes$GO_function), '</b>'),
                                dec_nodes$title)
       vis_object[[dec]]$nodes <- dec_nodes
     }
