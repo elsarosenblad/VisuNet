@@ -6,4 +6,4 @@ load_all("~/Documents/Forskningspraktik/VisuNet")
 
 ros <- rosetta(autcon)
 # VisuNet with GO annotations
-vis <- visunet(ros$main, addGO = TRUE)
+vis <- visunet(ros$main, addGO = TRUE, NodeSize = "sum")

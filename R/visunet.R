@@ -36,7 +36,7 @@
 #'The default is "DL".
 #'
 # -- Elsa suggestion: Update this part to sum if that is what we decide to use ---
-#' @param NodeSize a character string specifying the size of nodes:
+#' @param NodeSizeMetric a character string specifying the metric used for node filtering:
 #' \itemize{
 #'   \item "DC" - the mean decision coverage for the feature
 #'   \item "S" - the mean support for the feature
@@ -67,6 +67,12 @@
 #'
 #' @param GO_level GO level for analysis (1-10). Default: 5 which is the molecular function
 #'
+#' @param NodeSize a character string specifying the aggregation method for node size calculation:
+#' \itemize{
+#'   \item "mx" - use the maximum value of support/decision coverage for the node
+#'   \item "mean" - use the mean value of support/decision coverage for the node
+#'   \item "sum" - use the sum of support/decision coverage for the node (default)
+#' }
 #'
 #'@references
 #' See the \href{https://komorowskilab.github.io/VisuNet/}{documentation} for more details and examples.
@@ -123,7 +129,7 @@
 #' vis_out <- visunet(rules, type = "L")
 #'
 
-visunet = function(ruleSet, type ="RDF",  NodeColorType = "DL", NodeSize = "DC", EdgeColor = 'R', EdgeWidth=10, CustObjectNodes=list(), CustObjectEdges=list(), addGO = FALSE, GO_ontology = "MF", GO_level = 5){
+visunet = function(ruleSet, type ="RDF",  NodeColorType = "DL", NodeSizeMetric = "DC", EdgeColor = 'R', EdgeWidth=10, CustObjectNodes=list(), CustObjectEdges=list(), addGO = FALSE, GO_ontology = "MF", GO_level = 5, NodeSize = "sum"){
   rules <- ruleSet
   rules <-  data_input(rules, type)
   rules_10per_param <-  filtration_rules_10per(rules)
@@ -132,7 +138,7 @@ visunet = function(ruleSet, type ="RDF",  NodeColorType = "DL", NodeSize = "DC",
   minDecisionCoverage <- rules_10per_param$minDecisionCoverage
   
   if(minDecisionCoverage == 0){
-    NodeSize = 'S'
+    NodeSizeMetric = 'S'
     choices_v <- 'Min Support'
     names(choices_v) <- 'S'
     choices_values <- minSupp
@@ -222,7 +228,7 @@ visunet = function(ruleSet, type ="RDF",  NodeColorType = "DL", NodeSize = "DC",
         filter_rules(rules, input$accuracy, input$support, input$FiltrParam, input$value_slider)
       )
       RulesFiltr =  filtration_rules(rules, input$accuracy, input$FiltrParam, input$value_slider)
-      data_input=generate_object(decs, RulesFiltr,type, input$TopNodes, input$FiltrParam,input$NodeColor, EdgeColor, EdgeWidth, CustObjectNodes, CustObjectEdges)
+      data_input=generate_object(decs, RulesFiltr,type, input$TopNodes, input$FiltrParam,input$NodeColor, EdgeColor, EdgeWidth, CustObjectNodes, CustObjectEdges, NodeSize)
 
       # -- Elsa: Added GO annotations to network in run button click ---
       if(addGO) {
@@ -295,7 +301,7 @@ visunet = function(ruleSet, type ="RDF",  NodeColorType = "DL", NodeSize = "DC",
         inputId = "FiltrParam",
         label = "",
         choices = as.character(choices_v),
-        selected = NodeSize)
+        selected = NodeSizeMetric)
     })
     
     data_available <- eventReactive( input$FiltrParam, {
