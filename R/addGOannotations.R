@@ -29,7 +29,7 @@ addGOannotations <- function(vis_object, ontology = "MF") {
         )
         if (!is.null(go_term_data) && nrow(go_term_data) > 0) {
           go_terms <- as.character(unique(go_term_data$TERM))
-          go_list[[symbol]] <- paste(go_terms, collapse = "; ")
+          go_list[[symbol]] <- paste(go_terms, collapse = "<br/>")
         }
       }
     }
