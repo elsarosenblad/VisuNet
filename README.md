@@ -47,17 +47,16 @@ VisuNet supports automatic Gene Ontology annotations for nodes. This feature add
 **Parameters:**
 - `addGO`: Set to `TRUE` to enable GO annotations (default: `FALSE`)
 - `GO_ontology`: Ontology type - "MF" (Molecular Function), "BP" (Biological Process), "CC" (Cellular Component)
-- `GO_level`: GO hierarchy level (1-10, default: 5)
 
 **Requirements:** This feature requires the `clusterProfiler`, `org.Hs.eg.db`, and `GO.db` packages.
 
 **Usage Example:**
 ```R
 # Add GO annotations using Molecular Function ontology
-vis <- visunet(ros$main, addGO = TRUE, GO_ontology = "MF", GO_level = 5)
+vis <- visunet(ros$main, addGO = TRUE, GO_ontology = "MF")
 
-# Use Biological Process ontology at level 3
-vis <- visunet(ros$main, addGO = TRUE, GO_ontology = "BP", GO_level = 3)
+# Use Biological Process ontology
+vis <- visunet(ros$main, addGO = TRUE, GO_ontology = "BP")
 ```
 
 GO annotations provide additional biological context to help interpret the functional significance of genes/metabolites in your rule networks.

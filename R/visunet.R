@@ -65,8 +65,6 @@
 #' @param GO_ontology Ontology to use for GO analysis. Options: "MF" (Molecular Function),
 #' "BP" (Biological Process), "CC" (Cellular Component). Default: "MF"
 #'
-#' @param GO_level GO level for analysis (1-10). Default: 5 which is the molecular function
-#'
 #' @param NodeSize a character string specifying the aggregation method for node size calculation:
 #' \itemize{
 #'   \item "mx" - use the maximum value of support/decision coverage for the node
@@ -129,7 +127,7 @@
 #' vis_out <- visunet(rules, type = "L")
 #'
 
-visunet = function(ruleSet, type ="RDF",  NodeColorType = "DL", NodeSizeMetric = "DC", EdgeColor = 'R', EdgeWidth=10, CustObjectNodes=list(), CustObjectEdges=list(), addGO = FALSE, GO_ontology = "MF", GO_level = 5, NodeSize = "sum"){
+visunet = function(ruleSet, type ="RDF",  NodeColorType = "DL", NodeSizeMetric = "DC", EdgeColor = 'R', EdgeWidth=10, CustObjectNodes=list(), CustObjectEdges=list(), addGO = FALSE, GO_ontology = "MF", NodeSize = "sum"){
   rules <- ruleSet
   rules <-  data_input(rules, type)
   rules_10per_param <-  filtration_rules_10per(rules)
