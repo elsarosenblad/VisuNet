@@ -15,6 +15,52 @@ Installation
 devtools::install_github("komorowskilab/VisuNet")
 ```
 
+***
+## Recent Updates
 
-*** 
+### Node Size Aggregation Methods
+
+VisuNet supports different aggregation methods for calculating node sizes. You can choose how to aggregate support/decision coverage values across rules for each node:
+
+- `"sum"` (default): Use the sum of support/decision coverage values
+- `"mean"`: Use the mean of support/decision coverage values
+- `"mx"`: Use the maximum of support/decision coverage values
+
+**Usage Example:**
+```R
+# Default behavior (sum aggregation)
+vis <- visunet(ros$main)
+
+# Use mean aggregation instead
+vis <- visunet(ros$main, NodeSize = "mean")
+
+# Use maximum aggregation
+vis <- visunet(ros$main, NodeSize = "mx")
+```
+
+This parameter allows for more flexible node size calculations depending on your analysis needs.
+
+### Gene Ontology (GO) Annotations
+
+VisuNet supports automatic Gene Ontology annotations for nodes. This feature adds functional information to your network nodes using biological pathway data.
+
+**Parameters:**
+- `addGO`: Set to `TRUE` to enable GO annotations (default: `FALSE`)
+- `GO_ontology`: Ontology type - "MF" (Molecular Function), "BP" (Biological Process), "CC" (Cellular Component)
+- `GO_level`: GO hierarchy level (1-10, default: 5)
+
+**Requirements:** This feature requires the `clusterProfiler`, `org.Hs.eg.db`, and `GO.db` packages.
+
+**Usage Example:**
+```R
+# Add GO annotations using Molecular Function ontology
+vis <- visunet(ros$main, addGO = TRUE, GO_ontology = "MF", GO_level = 5)
+
+# Use Biological Process ontology at level 3
+vis <- visunet(ros$main, addGO = TRUE, GO_ontology = "BP", GO_level = 3)
+```
+
+GO annotations provide additional biological context to help interpret the functional significance of genes/metabolites in your rule networks.
+
+***
 See the [documentation](https://komorowskilab.github.io/VisuNet/).
