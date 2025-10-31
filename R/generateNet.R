@@ -1,5 +1,5 @@
 generateNet=function(decs, rules, type, RulesSetSite, TopNodes,FiltrParam,
-                     NodeColorType, EdgeColor, EdgeWidth, NewDataNodes, NewDataEdges){
+                     NodeColorType, EdgeColor, EdgeWidth, NewDataNodes, NewDataEdges, NodeSize){
   if(type == 'RDF'){
     vec = as.character(as.matrix(rules["features"]))
     lst1 = sapply(vec, function(x) strsplit(x, ",", fixed = TRUE))
@@ -150,15 +150,25 @@ generateNet=function(decs, rules, type, RulesSetSite, TopNodes,FiltrParam,
   #   NodeInfoDF$value <- sumSupp   # <-- SUM instead of mean
   # }
   
-  # --- Elsa: Node size options ---
+  # --- Node size calculation based on NodeSize ---
   if (FiltrParam != 'Min Decision Coverage') {
-    #NodeInfoDF$value <- meanSupp        # per-node mean
-    NodeInfoDF$value <- sumSupp          # per-node sum
-    #NodeInfoDF$value <- maxSupp         # per-node max
+    # Use support values
+    if (NodeSize == "mx") {
+      NodeInfoDF$value <- maxSupp
+    } else if (NodeSize == "mean") {
+      NodeInfoDF$value <- meanSupp
+    } else {  # default "sum"
+      NodeInfoDF$value <- sumSupp
+    }
   } else {
-    #NodeInfoDF$value <- meanDecisionCoverage
-    NodeInfoDF$value <- sumDecisionCoverage
-    #NodeInfoDF$value <- maxDecisionCoverage
+    # Use decision coverage values
+    if (NodeSize == "mx") {
+      NodeInfoDF$value <- maxDecisionCoverage
+    } else if (NodeSize == "mean") {
+      NodeInfoDF$value <- meanDecisionCoverage
+    } else {  # default "sum"
+      NodeInfoDF$value <- sumDecisionCoverage
+    }
   }
   
   
