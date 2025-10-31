@@ -41,7 +41,7 @@ addGOannotations <- function(vis_object, ontology = "MF") {
 
   nodes <- merge(vis_object$all$nodes, go_df, by = "label", all.x = TRUE)
   nodes$title <- ifelse(!is.na(nodes$GO_function),
-                       paste0(nodes$title, '<br/>GO: ', ifelse(nodes$GO_function == "", "NA", nodes$GO_function)),
+                       paste0(nodes$title, '<br/><span style="font-weight: normal;">GO:</span> <b>', ifelse(nodes$GO_function == "", "NA", nodes$GO_function), '</b>'),
                        nodes$title)
   vis_object$all$nodes <- nodes
 
@@ -49,7 +49,7 @@ addGOannotations <- function(vis_object, ontology = "MF") {
     if (!is.null(vis_object[[dec]]$nodes) && nrow(vis_object[[dec]]$nodes) > 0) {
       dec_nodes <- merge(vis_object[[dec]]$nodes, go_df, by = "label", all.x = TRUE)
       dec_nodes$title <- ifelse(!is.na(dec_nodes$GO_function),
-                               paste0(dec_nodes$title, '<br/>GO: ', ifelse(dec_nodes$GO_function == "", "NA", dec_nodes$GO_function)),
+                               paste0(dec_nodes$title, '<br/><span style="font-weight: normal;">GO:</span> <b>', ifelse(dec_nodes$GO_function == "", "NA", dec_nodes$GO_function), '</b>'),
                                dec_nodes$title)
       vis_object[[dec]]$nodes <- dec_nodes
     }

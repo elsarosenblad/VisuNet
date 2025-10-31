@@ -28,14 +28,17 @@ VisuNet supports different aggregation methods for calculating node sizes. You c
 
 **Usage Example:**
 ```R
+# Load your rule data (e.g., from R.ROSETTA or other sources)
+rules <- ros$main  # or your rule dataset
+
 # Default behavior (sum aggregation)
-vis <- visunet(ros$main)
+vis <- visunet(rules)
 
 # Use mean aggregation instead
-vis <- visunet(ros$main, NodeSize = "mean")
+vis <- visunet(rules, NodeSize = "mean")
 
 # Use maximum aggregation
-vis <- visunet(ros$main, NodeSize = "mx")
+vis <- visunet(rules, NodeSize = "mx")
 ```
 
 This parameter allows for more flexible node size calculations depending on your analysis needs.
@@ -52,11 +55,14 @@ VisuNet supports automatic Gene Ontology annotations for nodes. This feature add
 
 **Usage Example:**
 ```R
+# Load your rule data
+rules <- ros$main  # or your rule dataset
+
 # Add GO annotations using Molecular Function ontology
-vis <- visunet(ros$main, addGO = TRUE, GO_ontology = "MF")
+vis <- visunet(rules, addGO = TRUE, GO_ontology = "MF")
 
 # Use Biological Process ontology
-vis <- visunet(ros$main, addGO = TRUE, GO_ontology = "BP")
+vis <- visunet(rules, addGO = TRUE, GO_ontology = "BP")
 ```
 
 GO annotations provide additional biological context to help interpret the functional significance of genes/metabolites in your rule networks.
