@@ -1,6 +1,6 @@
 generate_object = function(decs, rules, type, TopNodes, FiltrParam,
                            NodeColorType, EdgeColor, EdgeWidth,
-                           NewDataNodes, NewDataEdges){
+                           NewDataNodes, NewDataEdges, NodeSize){
   AllNets = NULL
   Net = NULL
   for (i in decs){
@@ -10,7 +10,7 @@ generate_object = function(decs, rules, type, TopNodes, FiltrParam,
     if (RulesSetSize != 0){
       Net = generateNet(i, RulesDec, type, RulesSetSize, TopNodes, FiltrParam,
                         NodeColorType = NodeColorType, EdgeColor, EdgeWidth,
-                        NewDataNodes, NewDataEdges)
+                        NewDataNodes, NewDataEdges, NodeSize)
     } else {
       # --- Elsa: changed NodeRulesSetPerNode -> RulesSetPerNode ---
       Net = list(nodes = NULL, edges = NULL, RulesSetPerNode = NULL)
